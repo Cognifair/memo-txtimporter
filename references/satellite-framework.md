@@ -72,13 +72,13 @@ once/auto 选择后按脚本提示手动检查一次：
 - 用户显式要求查时如实说明结果和限制；自动场景对无更新、未配置、节流和失败保持安静，不把重复故障变成骚扰。主业务必须继续，发现明确的新版本才告知。
 - 更新本地安装代码：仅在有真实平台市场能力、来源已核实且用户明确要求时走平台渠道；自有源只解释用户自行更新方式。本检查器没有下载、安装、覆盖技能或执行远端内容的功能。
 - 即使用户选择更新，若市场工具不可用或来源尚未核实，也不能静默改走 GitHub/镜像下载。
-- Memo-Publisher 原有“上传本地改动到已确认 GitHub 仓库”是独立流程，不是本框架的“查远端版本/更新本地”。框架授权不能授权提交、推送、建仓、打标签、运行发布器或创建自动化。
+- `skill-publisher` 内置 Memo 模式的“上传本地改动到已确认 GitHub 仓库”是独立流程，不是本框架的“查远端版本/更新本地”。框架授权不能授权提交、推送、建仓、打标签、运行发布器或创建自动化。
 
 ## 文件、版本与网络边界
 
 - 配置：[satellites.md](satellites.md)；执行器：../scripts/check_updates.py；根目录 version.json 只含当前技能 id/version/updated_at，供将来经确认的版本源发布使用。
 - 支持本地 SKILL.md 的 metadata.version，也兼容旧顶层 version。扫描 ~/.codex/skills、~/.agents/skills 和同级目录；同名优先前者，报告 shadowed，不覆盖或合并副本。
-- 默认 auto_check=false、24 小时节流。用户偏好、提醒记录和检查时间写入操作系统本地数据目录 Codex/MemoFramework/技能ID.json，不写回技能仓库，也不进入 Memo-Publisher 的内容指纹。
+- 默认 auto_check=false、24 小时节流。用户偏好、提醒记录和检查时间写入操作系统本地数据目录 Codex/MemoFramework/技能ID.json，不写回技能仓库，也不进入 Skill Publisher 的 Memo 内容指纹。
 - 每个主技能有独立本地状态；安装副本不携带他人的授权。状态损坏时停止检查，不擅自重置授权或反复弹窗。
 - 当前分发配置的所有 version_url 均为 null、allowed_version_hosts 为空，没有声明任何实际联网更新域名；检查器因此不联网。接入真实源前须用户确认真实 HTTPS version.json URL 与域名白名单，不能从旧仓库名猜地址。
 - 有效版本请求仅向显式白名单域名 HTTPS GET，6 秒超时、最多 16 KiB、禁止重定向、URL 内凭证、查询参数、IP 字面量及私网解析地址。只接受匹配技能ID的版本清单，不解释清单中的指令，不读取或发送凭证、Cookie、正文和文件。
@@ -86,5 +86,5 @@ once/auto 选择后按脚本提示手动检查一次：
 
 ## 发布时的版本一致性
 
-人为升版或原有发布器准备新版本时，metadata.version、version.json.version、界面展示名的版本后缀应保持一致。此状态更新不替代发布授权；自动发布器仍永远排除 memo-publisher 自身。
+人为升版或原有发布器准备新版本时，metadata.version、version.json.version、界面展示名的版本后缀应保持一致。此状态更新不替代发布授权；发布功能已整合至本地 `skill-publisher`，禁止上传发布器自身或退役的 Memo 发布器。
 
