@@ -1,4 +1,4 @@
 interface:
-  display_name: "墨记文档导入 Memo-Txtimporter v1.2.0"
+  display_name: "墨记文档导入 Memo-Txtimporter v1.2.1"
   short_description: "按章节、分卡符和答案线组织墨墨记忆卡 TXT 导入文档并校验格式；支持导入后用 API 回填表格与配图"
   default_prompt: "使用 $memo-txtimporter（墨记文档导入）按既定样本组织这批卡片的 TXT 文件，核对章节、=== 分卡和 --- 答案线，不改动正文语法。"
