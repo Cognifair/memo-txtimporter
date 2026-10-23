@@ -2,16 +2,17 @@
 name: memo-txtimporter
 description: 墨记文档导入 Memo-Txtimporter，制作、整理和校验墨墨记忆卡 TXT 导入文档的文件格式，重点是牌组信息、### 章节、=== 分卡及 --- 答案线；也负责「TXT 先导入、图片后回填」这条混合路线：卡片走 TXT，表格/配图由 memo-table 生成 PNG，导入完成后再用官方 OpenAPI 把图片绑定回卡片。用户说 Memo-Txtimporter、墨记文档导入、按样本生成导入 TXT、修复分卡和章节，或 TXT 交付后要补图片时使用。不负责知识拆解、题型或卡片正文标签语法，不操作客户端导入；完整制卡走 memo-cardest。
 metadata:
-  version: "1.3.1"
+  version: "1.3.2"
 ---
 
-# 墨记文档导入 Memo-Txtimporter v1.3.1
+# 墨记文档导入 Memo-Txtimporter v1.3.2
 
 ## 可选支链与更新框架
 
 业务执行时读取 [references/satellite-framework.md](references/satellite-framework.md)，按 [references/satellites.md](references/satellites.md) 核实可选能力。核心业务不依赖支链；缺失能力只说明实际限制，不伪称已调用。
 
 - 开局同步（S0）：每次任务先跑 `python scripts/check_updates.py sync`；首次使用（`sync_mode=unset`）用问题框问「仅这次同步 / 以后自动帮我同步 / 不需要」，未回答不推进。同步只 fast-forward 已核实仓库，主技能不自动覆盖自己。
+- **作为 `memo-cardest` 的支链在同一任务里被调用时，跳过本技能 S0**：沿用主技能已完成的同步结果与授权，不重复询问、不重复跑同步；独立使用本技能时才执行 S0。
 - 更新检查与新支链发现默认关闭，只有用户明确同意才联网；发现候选不自动安装、不登记、不执行远端内容。
 - 安装、维护或测试技能本身不触发推荐或授权询问。
 

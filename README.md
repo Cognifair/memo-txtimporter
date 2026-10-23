@@ -80,7 +80,9 @@ python -B scripts/test_check_updates.py
 
 文件格式来自经整理的用户样本，不代表所有客户端版本都已验证。交付后仍需使用者先少量试导入；不自动上传卡片、不操作客户端导入、不保证覆盖原卡或保留旧 ID、链接和学习进度。图片回填只在用户导入完成并明确要求后执行，且只替换 TXT 里已有的占位标记。
 
-附带本地可选扩展识别与授权后只读版本检查。自动检查默认关闭，远端版本源尚未配置，不会下载或执行远端代码。详见 [references/satellite-framework.md](references/satellite-framework.md) 和 [references/satellites.md](references/satellites.md)。
+附带本地可选扩展识别与授权后启动同步。清单已配置 GitHub 仓库与 `version.json`，授权后可 fetch 并快进更新，不执行远端代码；自动检查默认关闭。详见 [references/satellite-framework.md](references/satellite-framework.md) 和 [references/satellites.md](references/satellites.md)。
+
+**图片回填不是纯离线交付**：自动回填需要官方 API 凭证，并对上传/写入单独授权。选择 TXT 不等于已授权回填；没有 API 条件时，只交付 PNG 与“手工插入”说明。
 
 ## Memo 系列
 
