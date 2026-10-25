@@ -2,10 +2,10 @@
 name: memo-txtimporter
 description: 墨记文档导入 Memo-Txtimporter，制作、整理和校验墨墨记忆卡 TXT 导入文档的文件格式，重点是牌组信息、### 章节、=== 分卡及 --- 答案线；也负责「TXT 先导入、图片后回填」这条混合路线：卡片走 TXT，表格/配图由 memo-table 生成 PNG，导入完成后再用官方 OpenAPI 把图片绑定回卡片。用户说 Memo-Txtimporter、墨记文档导入、按样本生成导入 TXT、修复分卡和章节，或 TXT 交付后要补图片时使用。不负责知识拆解、题型或卡片正文标签语法，不操作客户端导入；完整制卡走 memo-cardest。
 metadata:
-  version: "1.3.4"
+  version: "1.3.5"
 ---
 
-# 墨记文档导入 Memo-Txtimporter v1.3.4
+# 墨记文档导入 Memo-Txtimporter v1.3.5
 
 ## 可选支链与更新框架
 
@@ -77,7 +77,9 @@ python scripts/lint_txt.py <实际TXT路径>
 
 ## 交付时附导入教程
 
-每次交付 `.txt`（含“只生成 TXT”和“先导入、后回填”两种路线），最终消息都要**主动附上导入教程**，不等用户问：
+每次交付 `.txt`（含“只生成 TXT”和“先导入、后回填”两种路线），最终消息都要**主动附上导入教程并贴出动图**，不等用户问：
+
+运行 `python -B scripts/import_guide.py`，把输出原样附在消息末尾（四步 + GIF 绝对路径 + 上限说明）：
 
 ```text
 导入方式（电脑版 Markji）：
@@ -85,10 +87,10 @@ python scripts/lint_txt.py <实际TXT路径>
 2. 右上角「批量制卡」→「从文本导入」
 3. 粘贴 TXT，保持 ### / === / --- 默认，先看预览，再点「导入」
 
-图文/动图：references/import-guide.md
-离线网页：references/import-guide.html
+![TXT 导入流程](<本技能目录>/references/assets/import-flow-36b59d.gif)
 ```
 
+- **必须贴动图**；不要只写文字步骤，也不要只给 `import-guide.md` 链接。客户端不能显示本地图片时，保留四步并给出 GIF 绝对路径。
 - 教程只放在回复里，不写进 TXT 文件或卡片正文。
 - 用户已明确知道怎么导入、或明确说“不用教程”时可以省略，但要说明这次省略了。
 - 单张卡片正文上限为 5000 字符；整份牌组的 TXT 导入没有总量限制，可以一次导入；超过 5000 字符的单卡需拆卡。

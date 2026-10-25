@@ -2,6 +2,14 @@
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
+## v1.3.5 — 2026-10-25
+
+影响面：memo-txtimporter(SKILL.md, scripts/import_guide.py)
+
+### 修复
+
+- 交付教程改为强制运行 `scripts/import_guide.py` 并贴出动图，不再只给文字步骤或 `import-guide.md` 链接。
+
 ## v1.3.4 — 2026-10-25
 
 影响面：memo-txtimporter(SKILL.md, references/import-guide.md, references/import-guide.html)
