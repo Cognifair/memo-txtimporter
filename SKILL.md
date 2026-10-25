@@ -30,6 +30,17 @@ metadata:
   [references/image-backfill.md](references/image-backfill.md)，本技能的 API 调用仅限这条流程内的
   文件上传与卡片更新，不扩到其他接口。
 
+## 用户不知道怎么导入时
+
+先给四步，不要先讲格式：
+
+1. 打开电脑版 Markji，进入「制卡桌面」。
+2. 点进要导入 TXT 的牌组。
+3. 点右上角「批量制卡」→「从文本导入」。
+4. 把 TXT 内容粘贴到文本框，点右上角「导入」；保持 `###` / `===` / `---` 默认，先看右侧预览。
+
+需要图文或演示时，给用户 [references/import-guide.md](references/import-guide.md)（含步骤图与 GIF）或同目录的 `import-guide.html`（离线可打开）。**文字步骤优先，HTML/图片只作辅助**；截图只指示按钮位置，界面以用户当前客户端为准。不要声称代用户导入，也不要把“导入成功”当成格式已验证。
+
 ## 文件格式：先读再封装
 
 每次制作或修复前，完整读取 [references/container-format.md](references/container-format.md)。它记录用户 2026-10-15 提供的《作废.txt》样本及其适用边界；不依赖原始下载文件一直存在。
