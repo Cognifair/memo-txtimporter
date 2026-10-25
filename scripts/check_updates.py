@@ -21,6 +21,11 @@ SEMVER = re.compile(r"v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
                     r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?\Z")
 MAX_BYTES = 16384
 DEFAULT_STATE = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local/share")) / "Codex/MemoFramework"
+LOCK_WAIT_SECONDS = 2.0
+
+
+class LockBusy(RuntimeError):
+    """Another process is already syncing and holds the state lock."""
 
 
 @total_ordering
@@ -255,17 +260,30 @@ def locked(path):
     if lock.is_symlink():
         raise ValueError("Lock cannot be a symlink")
     with lock.open("a+b") as stream:
-        stream.seek(0)
         if os.name == "nt":
             import msvcrt
-            if not stream.read(1):
+            # Do not read the byte before locking: Windows byte locks are mandatory
+            # and a read of the locked byte fails with PermissionError.
+            if os.fstat(stream.fileno()).st_size < 1:
+                stream.seek(0)
                 stream.write(b"0")
                 stream.flush()
-            stream.seek(0)
-            msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
-        else:
-            import fcntl
-            fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        deadline = time.monotonic() + LOCK_WAIT_SECONDS
+        delay = 0.1
+        while True:
+            try:
+                if os.name == "nt":
+                    stream.seek(0)
+                    msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+                else:
+                    import fcntl
+                    fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except OSError:
+                if time.monotonic() >= deadline:
+                    raise LockBusy("Another sync is running; lock held: " + str(lock)) from None
+                time.sleep(delay)
+                delay = min(delay * 2, 0.4)
         try:
             yield
         finally:
@@ -734,6 +752,13 @@ def main():
                 save_state(state_path, state)
         print(json.dumps(output, ensure_ascii=False, indent=2))
         return 0
+    except LockBusy as exc:
+        print(json.dumps({"status": "busy", "reason": "sync_in_progress",
+                          "message": str(exc),
+                          "hint": "Another client/session is syncing; this run skipped sync. "
+                                  "Continue business and retry later."},
+                         ensure_ascii=False))
+        return 1
     except Exception:
         error = {"status": "error", "reason": stage + "_failed",
                  "message": "Sync/check unavailable; preserve existing consent and continue independent card work."}

@@ -2,6 +2,14 @@
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
+## v1.3.8 — 2026-10-26
+
+影响面：memo-txtimporter(SKILL.md, scripts/check_updates.py, scripts/test_check_updates.py) / memo-cardest(scripts/check_updates.py, scripts/test_check_updates.py)
+
+### 修复
+
+- 更新器与 cardest 对齐：状态锁竞争返回 `busy`，不再误报 `state_lock_failed`；锁获取带 2 秒退避重试，加锁前不读取被锁字节。
+
 ## v1.3.7 — 2026-10-25
 
 影响面：memo-txtimporter(SKILL.md, scripts/finalize_txt.py) / memo-cardest(SKILL.md, references/txt-workflow.md)
