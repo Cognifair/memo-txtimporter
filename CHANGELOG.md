@@ -2,6 +2,14 @@
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
+## v1.3.4 — 2026-10-25
+
+影响面：memo-txtimporter(SKILL.md, references/import-guide.md, references/import-guide.html)
+
+### 修复
+
+- 修正导入上限说明：单张卡片正文上限为 5000 字符，整份牌组的 TXT 导入没有总量限制；删除“单次粘贴 2000 字符、长文件分批”的错误说法。
+
 ## v1.3.3 — 2026-10-25
 
 影响面：memo-txtimporter(SKILL.md, README.md, references/import-guide.md, references/import-guide.html, references/assets/import-menu-36b59d.gif, references/assets/import-dialog-36b59d.png, references/assets/import-flow-36b59d.gif)
