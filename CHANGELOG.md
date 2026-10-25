@@ -1,13 +1,14 @@
-﻿# 变更记录
+# 变更记录
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
 ## v1.3.3 — 2026-10-25
 
-影响面：memo-txtimporter(SKILL.md, README.md, references/import-guide.md, references/import-guide.html, references/assets/import-menu-36b59d.gif, references/assets/import-dialog-36b59d.png)
+影响面：memo-txtimporter(SKILL.md, README.md, references/import-guide.md, references/import-guide.html, references/assets/import-menu-36b59d.gif, references/assets/import-dialog-36b59d.png, references/assets/import-flow-36b59d.gif)
 
 ### 新增
 
+- 交付 TXT 时**自动附四步导入教程**，不等用户问；教程注明 2000 字符上限与“不代操作导入”。
 - 新增「把 TXT 导入墨墨记忆卡」图文指南：四步操作、步骤截图与 GIF、导入前检查；SKILL.md 与 README 增加入口。
 - 补充导入弹窗截图与填写要点：简单/专业模式、保持 `###` / `===` / `---` 默认、先看预览、2000 字符上限。
 - 指南以文字为主、HTML 为离线辅助；截图裁掉了账号区域，只指示按钮位置。

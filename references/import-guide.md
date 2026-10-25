@@ -9,6 +9,8 @@
 3. 点右上角「批量制卡」→「从文本导入」。
 4. 把 TXT 内容粘贴到文本框，点右上角「导入」。
 
+完整流程动图（3 帧）：[assets/import-flow-36b59d.gif](assets/import-flow-36b59d.gif)
+
 ![步骤 3：点「批量制卡」](assets/import-menu-1-36b59d.png)
 
 ![步骤 3：点「从文本导入」](assets/import-menu-2-36b59d.png)

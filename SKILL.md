@@ -2,10 +2,10 @@
 name: memo-txtimporter
 description: 墨记文档导入 Memo-Txtimporter，制作、整理和校验墨墨记忆卡 TXT 导入文档的文件格式，重点是牌组信息、### 章节、=== 分卡及 --- 答案线；也负责「TXT 先导入、图片后回填」这条混合路线：卡片走 TXT，表格/配图由 memo-table 生成 PNG，导入完成后再用官方 OpenAPI 把图片绑定回卡片。用户说 Memo-Txtimporter、墨记文档导入、按样本生成导入 TXT、修复分卡和章节，或 TXT 交付后要补图片时使用。不负责知识拆解、题型或卡片正文标签语法，不操作客户端导入；完整制卡走 memo-cardest。
 metadata:
-  version: "1.3.2"
+  version: "1.3.3"
 ---
 
-# 墨记文档导入 Memo-Txtimporter v1.3.2
+# 墨记文档导入 Memo-Txtimporter v1.3.3
 
 ## 可选支链与更新框架
 
@@ -74,6 +74,25 @@ python scripts/lint_txt.py <实际TXT路径>
 最容易踩的坑：**一张卡挂两个资产时，不要整轮只读一次远端快照**，否则处理第二个资产会用旧正文覆盖掉
 第一张图；每个资产写入前都要重新读该卡最新正文。完整清单见
 [references/image-backfill.md](references/image-backfill.md)。
+
+## 交付时附导入教程
+
+每次交付 `.txt`（含“只生成 TXT”和“先导入、后回填”两种路线），最终消息都要**主动附上导入教程**，不等用户问：
+
+```text
+导入方式（电脑版 Markji）：
+1. 打开制卡桌面，进入目标牌组
+2. 右上角「批量制卡」→「从文本导入」
+3. 粘贴 TXT，保持 ### / === / --- 默认，先看预览，再点「导入」
+
+图文/动图：references/import-guide.md
+离线网页：references/import-guide.html
+```
+
+- 教程只放在回复里，不写进 TXT 文件或卡片正文。
+- 用户已明确知道怎么导入、或明确说“不用教程”时可以省略，但要说明这次省略了。
+- 单次粘贴上限约 2000 字符；超长时提醒分批，或改走开放 API。
+- 不声称代用户导入；导入结果仍由用户自行确认。
 
 ## 验收与安全边界
 
