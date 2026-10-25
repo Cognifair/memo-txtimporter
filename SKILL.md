@@ -2,10 +2,10 @@
 name: memo-txtimporter
 description: 墨记文档导入 Memo-Txtimporter，制作、整理和校验墨墨记忆卡 TXT 导入文档的文件格式，重点是牌组信息、### 章节、=== 分卡及 --- 答案线；也负责「TXT 先导入、图片后回填」这条混合路线：卡片走 TXT，表格/配图由 memo-table 生成 PNG，导入完成后再用官方 OpenAPI 把图片绑定回卡片。用户说 Memo-Txtimporter、墨记文档导入、按样本生成导入 TXT、修复分卡和章节，或 TXT 交付后要补图片时使用。不负责知识拆解、题型或卡片正文标签语法，不操作客户端导入；完整制卡走 memo-cardest。
 metadata:
-  version: "1.3.6"
+  version: "1.3.7"
 ---
 
-# 墨记文档导入 Memo-Txtimporter v1.3.6
+# 墨记文档导入 Memo-Txtimporter v1.3.7
 
 ## 可选支链与更新框架
 
@@ -85,6 +85,7 @@ python -B scripts/finalize_txt.py <TXT> [--require-answer-line]
 
 把脚本输出**原样**附在消息末尾；它已包含四步、GIF 绝对路径、5000 / 无总量限制说明、结构检查结果和 `交付自检：导入教程已附`。
 
+- **按普通 Markdown 粘贴，不要用 ``` 代码块包住**；`![TXT 导入流程](...)` 必须作为图片语法渲染，否则 GIF 只会显示成一行文字。
 - 不要手写教程替代脚本输出，也不要只给 `references/import-guide.md` 链接。
 - 脚本会先跑 `lint_txt.py`；校验失败会退出 1，修好再交付，不能绕过。
 - 客户端不能显示本地图片时，保留脚本输出的文字和 GIF 路径。

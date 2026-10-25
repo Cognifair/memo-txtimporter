@@ -14,6 +14,8 @@ GIF = ROOT / "references" / "assets" / "import-flow-36b59d.gif"
 def main():
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
+    print("NOTE: paste stdout as plain Markdown; do not wrap it in a code fence, "
+          "or the GIF will not render.", file=sys.stderr)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("path", type=Path, help="TXT file to validate")
     parser.add_argument("--require-answer-line", action="store_true",

@@ -2,6 +2,14 @@
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
+## v1.3.7 — 2026-10-25
+
+影响面：memo-txtimporter(SKILL.md, scripts/finalize_txt.py) / memo-cardest(SKILL.md, references/txt-workflow.md)
+
+### 修复
+
+- 交付教程必须按普通 Markdown 粘贴，禁止用代码块包住；否则 GIF 只会显示成文字。`finalize_txt.py` 在 stderr 增加对应提示。
+
 ## v1.3.6 — 2026-10-25
 
 影响面：memo-txtimporter(SKILL.md, scripts/finalize_txt.py) / memo-cardest(SKILL.md)
