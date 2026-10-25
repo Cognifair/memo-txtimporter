@@ -2,6 +2,15 @@
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
+## v1.3.6 — 2026-10-25
+
+影响面：memo-txtimporter(SKILL.md, scripts/finalize_txt.py) / memo-cardest(SKILL.md)
+
+### 变更
+
+- 新增 `scripts/finalize_txt.py`：先跑 `lint_txt.py`，通过后输出四步教程、GIF 绝对路径、5000 / 无总量限制说明和 `交付自检：导入教程已附`；校验失败退出 1。
+- 交付规则改为必须原样附 `finalize_txt.py` 输出；删除 `scripts/import_guide.py`。
+
 ## v1.3.5 — 2026-10-25
 
 影响面：memo-txtimporter(SKILL.md, scripts/import_guide.py)

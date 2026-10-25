@@ -85,7 +85,7 @@ python -B scripts/test_check_updates.py
 3. 点右上角「批量制卡」→「从文本导入」。
 4. 粘贴或上传 TXT，按弹窗提示确认。
 
-图文版见 [references/import-guide.md](references/import-guide.md)（含完整流程 GIF 与步骤图）；离线 HTML 版见 `references/import-guide.html`。截图只指示按钮位置，界面以当前客户端为准。交付 TXT 时，技能会自动附上这四步教程，不用用户再问。
+图文版见 [references/import-guide.md](references/import-guide.md)（含完整流程 GIF 与步骤图）；离线 HTML 版见 `references/import-guide.html`。截图只指示按钮位置，界面以当前客户端为准。交付 TXT 时，技能会运行 `scripts/finalize_txt.py`，自动附上四步教程、GIF 和 `交付自检` 标记。
 
 ## 使用边界与更新框架
 
