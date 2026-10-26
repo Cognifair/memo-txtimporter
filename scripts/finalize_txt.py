@@ -2,6 +2,7 @@
 """Validate a TXT file and print the mandatory delivery block (tutorial + GIF + self-check)."""
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -25,6 +26,23 @@ def main():
     if not GIF.is_file():
         print(f"GIF missing: {GIF.as_posix()}; fix the package before delivery.", file=sys.stderr)
         return 1
+
+    # DSH / WorkBuddy only preview images inside the workspace; copy next to the chat CWD.
+    preview_dir = Path.cwd()
+    if ROOT == preview_dir or ROOT in preview_dir.parents:
+        preview_dir = args.path.resolve().parent
+    try:
+        preview_dir.mkdir(parents=True, exist_ok=True)
+        preview = preview_dir / "memo-txt-import.gif"
+        shutil.copyfile(GIF, preview)
+        try:
+            image_link = preview.relative_to(Path.cwd()).as_posix()
+        except ValueError:
+            image_link = preview.as_posix()
+    except OSError as exc:
+        preview = None
+        image_link = GIF.as_posix()
+        print(f"GIF preview copy failed: {exc}", file=sys.stderr)
 
     command = [sys.executable, str(LINT), str(args.path)]
     if args.require_answer_line:
@@ -51,7 +69,7 @@ def main():
     print("2. 右上角「批量制卡」→「从文本导入」")
     print("3. 粘贴 TXT，保持 ### / === / --- 默认，先看预览，再点「导入」")
     print()
-    print(f"![TXT 导入流程]({GIF.as_posix()})")
+    print(f"![TXT 导入流程]({image_link})")
     print()
     print("单张卡片正文上限 5000 字符；整份牌组的 TXT 导入没有总量限制，可以一次导入。")
     print()

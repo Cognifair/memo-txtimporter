@@ -2,6 +2,15 @@
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
+## v1.3.9 — 2026-10-26
+
+影响面：memo-txtimporter(SKILL.md, scripts/import_guide.py, scripts/finalize_txt.py)
+
+### 修复
+
+- 导入教程与交付尾注改为把 GIF 复制到工作区并使用相对路径，修复客户端无法预览技能目录图片的问题。
+- 新增 `scripts/import_guide.py` 供纯问答使用；`finalize_txt.py` 同步复制预览图。
+
 ## v1.3.8 — 2026-10-26
 
 影响面：memo-txtimporter(SKILL.md, scripts/check_updates.py, scripts/test_check_updates.py) / memo-cardest(scripts/check_updates.py, scripts/test_check_updates.py)

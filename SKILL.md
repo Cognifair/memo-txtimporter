@@ -2,10 +2,10 @@
 name: memo-txtimporter
 description: 墨记文档导入 Memo-Txtimporter，制作、整理和校验墨墨记忆卡 TXT 导入文档的文件格式，重点是牌组信息、### 章节、=== 分卡及 --- 答案线；也负责「TXT 先导入、图片后回填」这条混合路线：卡片走 TXT，表格/配图由 memo-table 生成 PNG，导入完成后再用官方 OpenAPI 把图片绑定回卡片。用户说 Memo-Txtimporter、墨记文档导入、按样本生成导入 TXT、修复分卡和章节，或 TXT 交付后要补图片时使用。不负责知识拆解、题型或卡片正文标签语法，不操作客户端导入；完整制卡走 memo-cardest。
 metadata:
-  version: "1.3.8"
+  version: "1.3.9"
 ---
 
-# 墨记文档导入 Memo-Txtimporter v1.3.8
+# 墨记文档导入 Memo-Txtimporter v1.3.9
 
 ## 可选支链与更新框架
 
@@ -40,7 +40,7 @@ metadata:
 3. 点右上角「批量制卡」→「从文本导入」。
 4. 把 TXT 内容粘贴到文本框，点右上角「导入」；保持 `###` / `===` / `---` 默认，先看右侧预览。
 
-需要图文或演示时，给用户 [references/import-guide.md](references/import-guide.md)（含步骤图与 GIF）或同目录的 `import-guide.html`（离线可打开）。**文字步骤优先，HTML/图片只作辅助**；截图只指示按钮位置，界面以用户当前客户端为准。不要声称代用户导入，也不要把“导入成功”当成格式已验证。
+需要图文/动图时，运行 `python -B scripts/import_guide.py`，把输出原样发给用户：脚本会把 GIF 复制到当前工作区 `memo-txt-import.gif`，并打印四步 + 相对路径图片。**在用户工作目录运行，不要 `cd` 到技能目录**；否则图片落在技能目录，客户端无法预览。不要只给 `import-guide.md` 链接；HTML 只在客户端不支持本地图片时兜底。截图只指示按钮位置，界面以用户当前客户端为准。不要声称代用户导入，也不要把“导入成功”当成格式已验证。
 
 ## 文件格式：先读再封装
 
