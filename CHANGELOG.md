@@ -2,6 +2,14 @@
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
+## v1.3.10 — 2026-10-28
+
+影响面：memo-txtimporter(references/satellite-framework.md)
+
+### 变更
+
+- 文档中的发布器名称由 `skill-publisher` 更新为 `maimemo-publisher`，与当前技能名保持一致。
+
 ## v1.3.9 — 2026-10-26
 
 影响面：memo-txtimporter(SKILL.md, scripts/import_guide.py, scripts/finalize_txt.py)
