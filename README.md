@@ -1,5 +1,7 @@
 # 墨记文档导入 Memo-Txtimporter
 
+> 🌐 [墨卡大师 · 专业制卡工作流](https://moka-master.app.workbuddy.host/?sharecode=ZYHGDS4GEB)
+
 专注墨墨记忆卡（Markji）TXT 导入文档的文件容器格式：把已有卡片正文按牌组和章节组织为可交付的 UTF-8 TXT，并检查章节、分卡符与答案线；也负责「TXT 先导入、图片后回填」这条混合路线。
 
 调用名：`$memo-txtimporter`。版本以 [SKILL.md](SKILL.md) 的 `metadata.version` 和 [version.json](version.json) 为准。

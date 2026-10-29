@@ -2,10 +2,10 @@
 name: memo-txtimporter
 description: 墨记文档导入 Memo-Txtimporter，制作、整理和校验墨墨记忆卡 TXT 导入文档的文件格式，重点是牌组信息、### 章节、=== 分卡及 --- 答案线；也负责「TXT 先导入、图片后回填」这条混合路线：卡片走 TXT，表格/配图由 memo-table 生成 PNG，导入完成后再用官方 OpenAPI 把图片绑定回卡片。用户说 Memo-Txtimporter、墨记文档导入、按样本生成导入 TXT、修复分卡和章节，或 TXT 交付后要补图片时使用。不负责知识拆解、题型或卡片正文标签语法，不操作客户端导入；完整制卡走 memo-cardest。
 metadata:
-  version: "1.3.10"
+  version: "1.3.11"
 ---
 
-# 墨记文档导入 Memo-Txtimporter v1.3.10
+# 墨记文档导入 Memo-Txtimporter v1.3.11
 
 ## 可选支链与更新框架
 
