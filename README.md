@@ -107,6 +107,7 @@ python -B scripts/test_check_updates.py
 | [墨记表格制作 Memo-Table](https://github.com/Cognifair/memo-table) | 表格图片与 LaTeX array 表格渲染 |
 | [迁墨 Memo-Ankitransfer](https://github.com/Cognifair/memo-ankitransfer) | Anki 图片挖空转墨墨原生遮罩 |
 | [Memo-QAhelper](https://github.com/Cognifair/memo-qahelper) | 墨墨记忆卡使用答疑（官方百科与论坛） |
+| [卡跳跳 Memo-CardLink](https://github.com/Cognifair/memo-cardlink) | 卡片单向跳转、双向互链与 Card 引用审计（原 Memo-Link） |
 <!-- memo-series:end -->
 
 ## License
