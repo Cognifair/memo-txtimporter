@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import socket
 import subprocess
 import tempfile
@@ -26,6 +27,10 @@ LOCK_WAIT_SECONDS = 2.0
 
 class LockBusy(RuntimeError):
     """Another process is already syncing and holds the state lock."""
+
+
+class StateDirNotWritable(RuntimeError):
+    """The sandbox does not allow writing the state directory."""
 
 
 @total_ordering
@@ -200,6 +205,44 @@ def fetch_manifest(item, allowed_hosts):
     return data["version"]
 
 
+def _writable(directory):
+    try:
+        directory.mkdir(parents=True, exist_ok=True)
+        probe = directory / (".write-test-" + str(os.getpid()))
+        probe.write_text("", encoding="utf-8")
+        probe.unlink()
+        return True
+    except OSError:
+        return False
+
+
+def resolve_state_dir(explicit, skill_id):
+    """Prefer the shared state dir; fall back to TEMP when workspace sandbox blocks it."""
+    if explicit is not None:
+        if not _writable(explicit):
+            raise StateDirNotWritable(
+                "state-dir is not writable: " + str(explicit)
+                + ". Use --state-dir with a path inside the agent workspace.")
+        return explicit, "explicit"
+    candidates = [(DEFAULT_STATE, "default"),
+                  (Path(tempfile.gettempdir()) / "MemoFramework", "temp_fallback")]
+    primary = DEFAULT_STATE / (skill_id + ".json")
+    for directory, source in candidates:
+        if not _writable(directory):
+            continue
+        if source == "temp_fallback":
+            target = directory / (skill_id + ".json")
+            if not target.exists() and primary.is_file():
+                try:
+                    shutil.copyfile(primary, target)
+                except OSError:
+                    pass
+        return directory, source
+    raise StateDirNotWritable(
+        "No writable state directory. Checked: " + ", ".join(str(path) for path, _ in candidates)
+        + ". In workspace-write, pass --state-dir <workspace>/.memo-state.")
+
+
 def default_state():
     return {"schema": 1, "auto_check": False, "pitched": False, "asked_update": False,
             "declined": False, "first_task": None, "pitch_task": None,
@@ -253,13 +296,27 @@ def save_state(path, state):
             temporary.unlink()
 
 
+def _open_lock(lock):
+    try:
+        return lock.open("a+b")
+    except PermissionError as exc:
+        raise StateDirNotWritable(
+            "State directory is not writable: " + str(lock.parent)
+            + ". Pass --state-dir <workspace>/.memo-state or run without sandbox.") from exc
+
+
 @contextmanager
 def locked(path):
-    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+    except PermissionError as exc:
+        raise StateDirNotWritable(
+            "State directory is not writable: " + str(path.parent)
+            + ". Pass --state-dir <workspace>/.memo-state or run without sandbox.") from exc
     lock = path.with_suffix(".lock")
     if lock.is_symlink():
         raise ValueError("Lock cannot be a symlink")
-    with lock.open("a+b") as stream:
+    with _open_lock(lock) as stream:
         if os.name == "nt":
             import msvcrt
             # Do not read the byte before locking: Windows byte locks are mandatory
@@ -394,7 +451,72 @@ def _apply_update(row, target_version):
     return {"id": row["id"], "result": "updated", "version": version, "commit": commit}
 
 
-def run_sync(cfg, rows, state, now=None, fetcher=None):
+def update_host(host_root):
+    """Fast-forward the installed host skill itself from its verified GitHub origin."""
+    root = Path(host_root)
+    if not (root / ".git").exists():
+        return {"id": "host", "result": "skipped", "reason": "not_a_git_checkout"}
+    code, origin, _ = run_git(root, "remote", "get-url", "origin")
+    if code != 0:
+        return {"id": "host", "result": "failed", "reason": "origin_unavailable"}
+    try:
+        validate_repository_url(origin)
+    except ValueError:
+        return {"id": "host", "result": "skipped", "reason": "remote_not_github"}
+    code, status, _ = run_git(root, "status", "--porcelain")
+    if code != 0:
+        return {"id": "host", "result": "failed", "reason": "git_status_failed"}
+    if status:
+        return {"id": "host", "result": "skipped", "reason": "dirty_worktree"}
+    code, branch, _ = run_git(root, "symbolic-ref", "--quiet", "--short", "HEAD")
+    if code != 0 or branch != "main":
+        return {"id": "host", "result": "skipped", "reason": "branch_mismatch"}
+    try:
+        identity, current_version = skill_metadata(root / "SKILL.md")
+    except (OSError, ValueError):
+        return {"id": "host", "result": "failed", "reason": "local_metadata_invalid"}
+    code, _, _ = run_git(root, "fetch", "--no-tags", "origin", "refs/heads/main")
+    if code != 0:
+        return {"id": "host", "result": "failed", "reason": "fetch_failed"}
+    code, target, _ = run_git(root, "rev-parse", "--verify", "FETCH_HEAD^{commit}")
+    if code != 0:
+        return {"id": "host", "result": "failed", "reason": "fetch_head_invalid"}
+    code, head, _ = run_git(root, "rev-parse", "HEAD")
+    if code != 0:
+        return {"id": "host", "result": "failed", "reason": "head_invalid"}
+    if head == target:
+        return {"id": "host", "result": "up_to_date", "version": current_version}
+    code, document, _ = run_git(root, "show", target + ":SKILL.md")
+    if code != 0:
+        return {"id": "host", "result": "failed", "reason": "target_metadata_unavailable"}
+    try:
+        target_identity, target_version = skill_metadata_text(document)
+    except ValueError:
+        return {"id": "host", "result": "failed", "reason": "target_metadata_invalid"}
+    if target_identity != identity:
+        return {"id": "host", "result": "failed", "reason": "target_identity_mismatch"}
+    if Version(target_version) <= Version(current_version):
+        return {"id": "host", "result": "skipped", "reason": "version_not_newer"}
+    code, _, _ = run_git(root, "merge-base", "--is-ancestor", "HEAD", target)
+    if code != 0:
+        return {"id": "host", "result": "skipped", "reason": "not_fast_forward"}
+    code, _, _ = run_git(root, "merge", "--ff-only", target)
+    if code != 0:
+        return {"id": "host", "result": "failed", "reason": "merge_failed", "needs_verification": True}
+    try:
+        final_identity, final_version = skill_metadata(root / "SKILL.md")
+    except (OSError, ValueError):
+        final_identity, final_version = None, None
+    code, final_head, _ = run_git(root, "rev-parse", "HEAD")
+    if (code != 0 or final_head != target or final_identity != identity
+            or final_version != target_version):
+        return {"id": "host", "result": "failed", "reason": "update_verification_failed",
+                "needs_verification": True}
+    return {"id": "host", "result": "updated", "from": current_version,
+            "version": target_version, "commit": target}
+
+
+def run_sync(cfg, rows, state, now=None, fetcher=None, host_root=None, host_updater=None):
     """Startup sync: authorized by the one-time prompt, never by silence."""
     mode = state.get("sync_mode", "unset")
     report = {"status": "off", "mode": mode, "checked": [], "updates": [],
@@ -421,6 +543,11 @@ def run_sync(cfg, rows, state, now=None, fetcher=None):
             report["failed"].append(dict(outcome, stage="update"))
         else:
             report["skipped"].append(outcome)
+    if host_root is not None:
+        host = (host_updater or update_host)(host_root)
+        report["host"] = host
+        if host.get("result") == "failed":
+            report["failed"].append(dict(host, stage="host_update"))
     if authorized_once:
         state["sync_pending_once"] = False
     state["last_sync"] = time.time() if now is None else now
@@ -632,7 +759,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skill-root", type=Path, default=Path(__file__).resolve().parent.parent)
     parser.add_argument("--root", type=Path, action="append", help="Explicit installed-skill search root; repeatable")
-    parser.add_argument("--state-dir", type=Path, default=DEFAULT_STATE)
+    parser.add_argument("--state-dir", type=Path, default=None)
     sub = parser.add_subparsers(dest="action", required=True)
     sub.add_parser("inventory")
     sub.add_parser("status")
@@ -666,12 +793,15 @@ def main():
         roots = args.root or [args.skill_root.parent, Path.home() / ".agents/skills", Path.home() / ".codex/skills"]
         roots = list(dict.fromkeys(root.resolve() for root in roots))
         rows = inventory(cfg, roots)
-        state_path = args.state_dir / (cfg["skill_id"] + ".json")
+        state_dir, state_source = resolve_state_dir(args.state_dir, cfg["skill_id"])
+        state_path = state_dir / (cfg["skill_id"] + ".json")
         if args.action == "inventory":
             output = {"host": cfg["skill_id"], "satellites": rows}
         elif args.action == "status":
             stage = "state_read"
-            output = {"host": cfg["skill_id"], "state": read_state(state_path), "satellites": rows}
+            output = {"host": cfg["skill_id"], "state": read_state(state_path),
+                      "state_dir": str(state_dir), "state_source": state_source,
+                      "satellites": rows}
         else:
             stage = "state_lock"
             with locked(state_path):
@@ -724,7 +854,7 @@ def main():
                     reserved["sync_pending_once"] = False
                     save_state(state_path, reserved)
                     stage = "sync"
-                    output = run_sync(cfg, rows, state)
+                    output = run_sync(cfg, rows, state, host_root=args.skill_root)
                 elif args.action == "missing":
                     target = next((row for row in rows if row["id"] == args.id), None)
                     if target is None:
@@ -752,6 +882,13 @@ def main():
                 save_state(state_path, state)
         print(json.dumps(output, ensure_ascii=False, indent=2))
         return 0
+    except StateDirNotWritable as exc:
+        print(json.dumps({"status": "error", "reason": "state_dir_not_writable",
+                          "message": str(exc),
+                          "hint": "The sandbox blocked the state directory; this is not a lock conflict. "
+                                  "Use --state-dir <workspace>/.memo-state or run sync outside the sandbox."},
+                         ensure_ascii=False))
+        return 1
     except LockBusy as exc:
         print(json.dumps({"status": "busy", "reason": "sync_in_progress",
                           "message": str(exc),

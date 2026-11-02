@@ -249,6 +249,28 @@ class LockTests(unittest.TestCase):
                 process.stdout.close()
 
 
+class StateDirTests(unittest.TestCase):
+    def test_falls_back_to_temp_when_primary_is_not_writable(self):
+        with tempfile.TemporaryDirectory() as tmp, \
+                patch.object(m, "_writable", side_effect=[False, True]), \
+                patch.object(m.tempfile, "gettempdir", return_value=tmp):
+            directory, source = m.resolve_state_dir(None, "memo-cardest")
+        self.assertEqual(source, "temp_fallback")
+        self.assertEqual(directory, Path(tmp) / "MemoFramework")
+
+    def test_explicit_unwritable_directory_is_an_error(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(m, "_writable", return_value=False):
+            with self.assertRaises(m.StateDirNotWritable):
+                m.resolve_state_dir(Path(tmp) / "state", "memo-cardest")
+
+    def test_lock_permission_error_is_not_reported_as_busy(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(
+                m, "_open_lock", side_effect=m.StateDirNotWritable("not writable")):
+            with self.assertRaises(m.StateDirNotWritable):
+                with m.locked(Path(tmp) / "state.json"):
+                    pass
+
+
 class GitUpdateTests(unittest.TestCase):
     """Real local repositories; only the verified remote's fetch is mapped to a fixture."""
 
@@ -331,6 +353,26 @@ class GitUpdateTests(unittest.TestCase):
             result = m.apply_update(self.row, "1.1.0")
         self.assertEqual(result["reason"], "update_verification_failed")
         self.assertTrue(result["needs_verification"])
+
+    def test_host_fast_forwards_itself(self):
+        result = m.update_host(self.checkout)
+        self.assertEqual(result["result"], "updated")
+        self.assertEqual(result["from"], "1.0.0")
+        self.assertEqual(result["version"], "1.1.0")
+        self.assertEqual(m.skill_metadata(self.checkout / "SKILL.md"), ("memo-test", "1.1.0"))
+        self.assertEqual(result["commit"], self.git(self.source, "rev-parse", "HEAD"))
+
+    def test_host_dirty_worktree_is_not_updated(self):
+        (self.checkout / "SKILL.md").write_text("local edit\n", encoding="utf-8")
+        before = self.git(self.checkout, "rev-parse", "HEAD")
+        result = m.update_host(self.checkout)
+        self.assertEqual(result["reason"], "dirty_worktree")
+        self.assertEqual(self.git(self.checkout, "rev-parse", "HEAD"), before)
+
+    def test_host_without_git_is_skipped(self):
+        plain = self.base / "plain"
+        plain.mkdir()
+        self.assertEqual(m.update_host(plain)["reason"], "not_a_git_checkout")
 
 
 class DiscoveryTests(unittest.TestCase):
@@ -663,7 +705,7 @@ class CliLifecycleTests(unittest.TestCase):
                 raise PermissionError()
             real_save(path, state)
 
-        def sync(*_):
+        def sync(*_, **__):
             persisted = m.read_state(self.state_dir / "memo-cardest.json")
             self.assertFalse(persisted["sync_pending_once"])
             return report

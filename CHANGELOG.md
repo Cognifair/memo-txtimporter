@@ -2,7 +2,17 @@
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
+## v1.3.13 — 2026-11-02
+
+影响面：memo-txtimporter(scripts/check_updates.py, scripts/test_check_updates.py)
+
+### 修复
+
+- 同步 `memo-cardest` 的共用更新器：补上主技能自更新、状态目录 fallback 与 `state_dir_not_writable` 的准确错误。
+- 更新器副本与源文件保持一致，`sync-framework --check` 恢复为 0；不影响 TXT 导入与制卡逻辑。
+
 ## v1.3.12 — 2026-10-30
+
 
 影响面：memo-txtimporter(README.md, references/satellites.md)
 
