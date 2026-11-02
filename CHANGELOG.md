@@ -2,6 +2,15 @@
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
+## v1.3.14 — 2026-11-02
+
+影响面：memo-txtimporter(scripts/check_updates.py, scripts/test_check_updates.py)
+
+### 修复
+
+- 继续同步 `memo-cardest` 1.9.0 的共用更新器：新增 `check --include-host`，S0 可只读比较主技能本地/远端 HEAD。
+- `sync-framework --check` 恢复为 0；不影响 TXT 导入与制卡逻辑。
+
 ## v1.3.13 — 2026-11-02
 
 影响面：memo-txtimporter(scripts/check_updates.py, scripts/test_check_updates.py)
