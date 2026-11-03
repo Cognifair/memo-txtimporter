@@ -2,6 +2,14 @@
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
+## v1.3.16 — 2026-11-03
+
+影响面：memo-txtimporter(SKILL.md, README.md, CHANGELOG.md, references/image-backfill.md, references/satellite-framework.md, references/satellites.md)
+
+### 变更
+
+- MEMO-TXTIMPORTER: 表格渲染统一指向墨兰迪 Memo-Canvas。
+
 ## v1.3.15 — 2026-11-03
 
 影响面：memo-txtimporter(SKILL.md, CHANGELOG.md, references/import-guide.md, references/import-guide.html, scripts/lint_txt.py, scripts/finalize_txt.py, scripts/import_guide.py, scripts/test_limits.py)
