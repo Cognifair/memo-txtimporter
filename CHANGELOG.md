@@ -2,6 +2,17 @@
 
 遵循语义化版本：修 bug → patch，新增能力 → minor，改变契约 → major。
 
+## v1.3.15 — 2026-11-03
+
+影响面：memo-txtimporter(SKILL.md, CHANGELOG.md, references/import-guide.md, references/import-guide.html, scripts/lint_txt.py, scripts/finalize_txt.py, scripts/import_guide.py, scripts/test_limits.py)
+
+### 变更
+
+- 按平台新规则区分单卡上限：专业版 5000 / 非专业版 2000 字符；本技能按更稳的 4500 / 1800 硬上限校验，4000 / 1600 软提醒。
+- `finalize_txt.py` 增加 `--member pro|free`，按 UTF-16 单元统计原始卡正文；超硬上限直接失败，不再只打印提示。
+- 未指定会员时默认按非专业版校验；调用方（MC）可传入已确认的 `member`，避免重复询问。
+- 导入教程（Markdown/HTML/脚本）统一写明平台上限与建议上限。
+
 ## v1.3.14 — 2026-11-02
 
 影响面：memo-txtimporter(scripts/check_updates.py, scripts/test_check_updates.py)

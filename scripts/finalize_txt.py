@@ -19,9 +19,13 @@ def main():
           "or the GIF will not render.", file=sys.stderr)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("path", type=Path, help="TXT file to validate")
+    parser.add_argument("--member", choices=["pro", "free"], default="free",
+                        help="Account tier; pro hard limit 4500, free hard limit 1800 (default: free)")
     parser.add_argument("--require-answer-line", action="store_true",
                         help="Require exactly one answer line per card")
     args = parser.parse_args()
+    hard_limit = 4500 if args.member == "pro" else 1800
+    warn_limit = 4000 if args.member == "pro" else 1600
 
     if not GIF.is_file():
         print(f"GIF missing: {GIF.as_posix()}; fix the package before delivery.", file=sys.stderr)
@@ -44,7 +48,8 @@ def main():
         image_link = GIF.as_posix()
         print(f"GIF preview copy failed: {exc}", file=sys.stderr)
 
-    command = [sys.executable, str(LINT), str(args.path)]
+    command = [sys.executable, str(LINT), str(args.path),
+               "--char-limit", str(hard_limit), "--warn-limit", str(warn_limit)]
     if args.require_answer_line:
         command.append("--require-answer-line")
     result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
@@ -71,7 +76,11 @@ def main():
     print()
     print(f"![TXT 导入流程]({image_link})")
     print()
-    print("单张卡片正文上限 5000 字符；整份牌组的 TXT 导入没有总量限制，可以一次导入。")
+    print("平台单卡正文上限：专业版 5000 / 非专业版 2000 字符。")
+    print(f"本次按 {args.member} 账号校验：硬上限 {hard_limit} 字符，软提醒 {warn_limit} 字符；单卡最大 {report.get('max_card_length', '?')} 字符。")
+    if args.member == "free":
+        print("未指定专业版时按非专业版校验；专业版请显式传 --member pro。")
+    print("整份牌组的 TXT 导入没有总量限制，可以一次导入。")
     print()
     print(f"结构检查：通过（{chapters} 章 / {cards} 卡，{errors} error {warnings} warning）")
     print()

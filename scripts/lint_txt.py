@@ -8,7 +8,11 @@ import re
 import sys
 
 
-def lint_text(text, require_answer_line=False):
+def utf16_length(text):
+    return len(text.encode("utf-16-le")) // 2
+
+
+def lint_text(text, require_answer_line=False, char_limit=None, warn_limit=None):
     result = {
         "ok": False,
         "scope": "sample-based TXT structure only; no card-syntax or client validation",
@@ -17,6 +21,9 @@ def lint_text(text, require_answer_line=False):
         "card_count": 0,
         "separator_count": 0,
         "answer_line_count": 0,
+        "max_card_length": 0,
+        "char_limit": char_limit,
+        "warn_limit": warn_limit,
         "errors": [],
         "warnings": [],
     }
@@ -38,6 +45,14 @@ def lint_text(text, require_answer_line=False):
         answers = [index for index, (_, value) in enumerate(pending) if value == "---"]
         result["card_count"] += 1
         result["answer_line_count"] += len(answers)
+        length = utf16_length("\n".join(value for _, value in pending))
+        result["max_card_length"] = max(result["max_card_length"], length)
+        if char_limit is not None and length > char_limit:
+            issue("errors", first_line, "card_too_long",
+                  f"Card is {length} UTF-16 units; hard limit is {char_limit}.")
+        elif warn_limit is not None and length > warn_limit:
+            issue("warnings", first_line, "card_near_limit",
+                  f"Card is {length} UTF-16 units; review the {warn_limit}-unit soft limit.")
         if current is None:
             issue("errors", first_line, "missing_chapter", "Card has no preceding ### chapter.")
         else:
@@ -124,13 +139,17 @@ def main():
     parser.add_argument("path", type=Path)
     parser.add_argument("--require-answer-line", action="store_true",
                         help="Treat anything except one answer line per card as an error.")
+    parser.add_argument("--char-limit", type=int, default=None,
+                        help="Hard per-card limit in UTF-16 units")
+    parser.add_argument("--warn-limit", type=int, default=None,
+                        help="Soft per-card warning limit in UTF-16 units")
     args = parser.parse_args()
     try:
         text = args.path.read_bytes().decode("utf-8")
     except (OSError, UnicodeError) as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False))
         return 2
-    result = lint_text(text, args.require_answer_line)
+    result = lint_text(text, args.require_answer_line, args.char_limit, args.warn_limit)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result["ok"] else 1
 
