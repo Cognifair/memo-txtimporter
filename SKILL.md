@@ -1,11 +1,11 @@
 ---
-name: memo-txtimporter
-description: 墨记文档导入 Memo-Txtimporter，制作、整理和校验墨墨记忆卡 TXT 导入文档的文件格式，重点是牌组信息、### 章节、=== 分卡及 --- 答案线；也负责「TXT 先导入、图片后回填」这条混合路线：卡片走 TXT，表格/配图由 memo-canvas 生成 PNG，导入完成后再用官方 OpenAPI 把图片绑定回卡片。用户说 Memo-Txtimporter、墨记文档导入、按样本生成导入 TXT、修复分卡和章节，或 TXT 交付后要补图片时使用。不负责知识拆解、题型或卡片正文标签语法，不操作客户端导入；完整制卡走 memo-cardest。
+name: memo-txt
+description: 墨记文档导入 Memo-TXT，制作、整理和校验墨墨记忆卡 TXT 导入文档的文件格式，重点是牌组信息、### 章节、=== 分卡及 --- 答案线；也负责「TXT 先导入、图片后回填」这条混合路线：卡片走 TXT，表格/配图由 memo-canvas 生成 PNG，导入完成后再用官方 OpenAPI 把图片绑定回卡片。用户说 Memo-TXT、墨记文档导入、按样本生成导入 TXT、修复分卡和章节，或 TXT 交付后要补图片时使用。不负责知识拆解、题型或卡片正文标签语法，不操作客户端导入；完整制卡走 memo-cardest。
 metadata:
-  version: "1.3.16"
+  version: "1.3.17"
 ---
 
-# 墨记文档导入 Memo-Txtimporter v1.3.16
+# 墨记文档导入 Memo-TXT v1.3.17
 
 ## 可选支链与更新框架
 
@@ -18,7 +18,7 @@ metadata:
 - 安装、维护或测试技能本身不触发推荐或授权询问。
 
 
-调用名为 `$memo-txtimporter`。本技能记住的是**多张卡片组成一份 TXT 的文件容器格式**，不是卡片内部的题型与标签语法。版本以 frontmatter 的 `metadata.version` 为准。
+调用名为 `$memo-txt`。本技能记住的是**多张卡片组成一份 TXT 的文件容器格式**，不是卡片内部的题型与标签语法。版本以 frontmatter 的 `metadata.version` 为准。
 
 ## 职责与输入
 

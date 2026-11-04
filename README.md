@@ -1,10 +1,10 @@
-# 墨记文档导入 Memo-Txtimporter
+# 墨记文档导入 Memo-TXT
 
 > 🌐 [墨卡大师 · 专业制卡工作流](https://moka-master.app.workbuddy.host/?sharecode=ZYHGDS4GEB)
 
 专注墨墨记忆卡（Markji）TXT 导入文档的文件容器格式：把已有卡片正文按牌组和章节组织为可交付的 UTF-8 TXT，并检查章节、分卡符与答案线；也负责「TXT 先导入、图片后回填」这条混合路线。
 
-调用名：`$memo-txtimporter`。版本以 [SKILL.md](SKILL.md) 的 `metadata.version` 和 [version.json](version.json) 为准。
+调用名：`$memo-txt`。版本以 [SKILL.md](SKILL.md) 的 `metadata.version` 和 [version.json](version.json) 为准。
 
 ## 核心格式
 
@@ -62,7 +62,7 @@ H2O
 
 ## 使用示例
 
-> 使用 $memo-txtimporter，把这些已有卡片按指定章节整理成 TXT，并检查分卡和答案线，不改动正文语法。
+> 使用 $memo-txt，把这些已有卡片按指定章节整理成 TXT，并检查分卡和答案线，不改动正文语法。
 
 仅整理已有正文时不询问会员状态、不索取凭证、不访问账户。如果还需要从原始学习材料设计新卡，交由 [墨卡大师 Memo-Cardest](https://github.com/Cognifair/memo-cardest) 处理内容层；表格渲染属于可选 Memo-Canvas 技能。
 
@@ -105,7 +105,7 @@ python -B scripts/test_check_updates.py
 | [墨卡大师 Memo-Cardest](https://github.com/Cognifair/memo-cardest) | 核心制卡：知识拆解、题型、正文语法与牌组操作 |
 | [Memo-MinerUOCR](https://github.com/Cognifair/memo-mineruocr) | 扫描件与大 PDF 识别、拆分并合并 Markdown |
 | [墨兰迪 Memo-Canvas](https://github.com/Cognifair/memo-canvas) | 表格图片与 LaTeX array 表格制作，扫描图像高清化与忠实重绘 |
-| [迁墨 Memo-Ankitransfer](https://github.com/Cognifair/memo-ankitransfer) | Anki 图片挖空转墨墨原生遮罩 |
+| [迁墨 Memo-AnkiGo](https://github.com/Cognifair/memo-ankigo) | Anki 图片挖空转墨墨原生遮罩 |
 | [Memo-QAhelper](https://github.com/Cognifair/memo-qahelper) | 墨墨记忆卡使用答疑（官方百科与论坛） |
 | [卡跳跳 Memo-CardLink](https://github.com/Cognifair/memo-cardlink) | 卡片单向跳转、双向互链与 Card 引用审计（原 Memo-Link） |
 <!-- memo-series:end -->

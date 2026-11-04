@@ -11,7 +11,7 @@
 ```json
 {
   "schema": 1,
-  "skill_id": "memo-txtimporter",
+  "skill_id": "memo-txt",
   "auto_check": false,
   "throttle_hours": 24,
   "allowed_version_hosts": [
@@ -57,14 +57,14 @@
       "version_url": "https://raw.githubusercontent.com/Cognifair/memo-canvas/main/version.json"
     },
     {
-      "id": "memo-ankitransfer",
-      "name": "迁墨 Memo-Ankitransfer",
+      "id": "memo-ankigo",
+      "name": "迁墨 Memo-AnkiGo",
       "capability": "Anki 图片挖空转墨墨原生遮罩",
       "install_source": "github_public_repository",
-      "repository_url": "https://github.com/Cognifair/memo-ankitransfer",
+      "repository_url": "https://github.com/Cognifair/memo-ankigo",
       "repository_branch": "main",
       "marketplace_listing": null,
-      "version_url": "https://raw.githubusercontent.com/Cognifair/memo-ankitransfer/main/version.json"
+      "version_url": "https://raw.githubusercontent.com/Cognifair/memo-ankigo/main/version.json"
     },
     {
       "id": "memo-qahelper",
